@@ -37,6 +37,17 @@ def GetMahalanobisSpace(data): # <- consider changing argument 'data' to sth mor
 
 
     return m_space, df # should I return 'df' as a separate output or maybe put this inside 'm_space' class
+    '''
+    In my opinion this function should take:
+
+     oa_design, and data (arguments)
+
+    And should produce:
+
+    reduced normal space, SNR with and without a variable, delta. (returns)
+
+    I should consider making it a class over a function as the final functionality my consist of many functions.
+    '''
 
 def CheckValidityPrototype(df):
     md_mean = df['MD'].mean()  # used for assessing reference space validity
