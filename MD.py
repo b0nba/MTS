@@ -9,7 +9,7 @@ class UnitSpace: # normal space??
     corr_matrix_inv: pd.DataFrame
     z: pd.Series # consider removing z as return value - I don't think it is necessary for the next steps
 
-
+# I have to create get_normal and get_abnormal instead of it
 def get_unit_space(dataset): # maybe after all this should be names 'get_normal_space' as it won't be really usable to get abnormal space (as this uses mean,std and cov_inv from normal group)
 
     mean = dataset.mean()
