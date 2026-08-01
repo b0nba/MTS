@@ -1,42 +1,42 @@
+from dataclasses import dataclass
 import pandas as pd
 import numpy as np
 
-class MSpace:
-    def __init__(self):
-        self.mean = pd.DataFrame()
-        self.cov = pd.DataFrame()
-        self.corr_matrix = pd.DataFrame()
+@dataclass(frozen=True, eq=False)
+class UnitSpace: # normal space??
+    mean: pd.Series
+    std: pd.Series
+    corr_matrix_inv: pd.DataFrame
+    z: pd.Series # consider removing z as return value - I don't think it is necessary for the next steps
 
 
-def GetMahalanobisSpace(data): # <- consider changing argument 'data' to sth more descriptive
-    tested_set = data.iloc[:, :] # <- do I need this variable or should I work on 'data' directly
+def get_unit_space(dataset): # maybe after all this should be names 'get_normal_space' as it won't be really usable to get abnormal space (as this uses mean,std and cov_inv from normal group)
 
-    mean = tested_set.mean()
-    std = tested_set.std()
+    mean = dataset.mean()
+    std = dataset.std()
 
-    z_scores = (tested_set - mean) / std
+    z_scores = (dataset - mean) / std
 
-    corr_matrix = tested_set.corr()
-    corr_inv = np.linalg.inv(corr_matrix.values)
+    corr_matrix = dataset.corr()
+    corr_inv = pd.DataFrame(
+        np.linalg.inv(corr_matrix.values),
+        index=corr_matrix.columns,
+        columns=corr_matrix.columns,
+    )
 
-    m_space = MSpace()
-    m_space.mean = mean
-    m_space.std = std
-    m_space.corr_matrix = corr_inv
+    return UnitSpace(mean=mean, std=std, corr_matrix_inv=corr_inv, z=z_scores) # Do I really need z scores? I can easily reconstruct them later
 
-    # Code above and below do two different things.
-    # I should consider refactoring this function into 2 separate ones.
+def get_md(us: UnitSpace):
+    return np.diag(us.z @ us.corr_matrix_inv@ us.z.T) / len(us.z)
 
-    z = z_scores.values
-    m_d = np.diag(z @ corr_inv @ z.T) / len(data.columns)
-
-    df = pd.DataFrame(tested_set, columns=data.columns) # <- should this
-    df['MD_distance'] = m_d # <- and this be inside of THIS function ?
-    # also shouldn't I save MD_distance inside 'data' directly?
-
-
-    return m_space, df # should I return 'df' as a separate output or maybe put this inside 'm_space' class
-
-def CheckValidityPrototype(df):
+def check_validity_prototype(df): # this is propably fine but I would add two methods inside of it (one for md~1, second for SNR (normal) <> SNR (abnormal)
     md_mean = df['MD'].mean()  # used for assessing reference space validity
     print("MD mean (should be ~1):", md_mean)
+
+# Section below is for tests and debugging, it needs to be moved to a separate file thought
+test = pd.DataFrame({'A': (1,6,3),
+                     'B' : (4,1,2),
+                    'C': (5,7,2)})
+
+m_space = get_unit_space(test)
+md_vec = get_md(m_space)
