@@ -7,7 +7,8 @@ class MSpace:
         self.cov = pd.DataFrame()
         self.corr_matrix = pd.DataFrame()
 
-
+# I should decide how I want my Mahalanobis Space to be defined is it just descriptive statistics (feels wrong conceptually)
+# or is it descriptive + m_d and data (feels right conceptually but wrong in terms of SRP)
 def GetMahalanobisSpace(data): # <- consider changing argument 'data' to sth more descriptive
     tested_set = data.iloc[:, :] # <- do I need this variable or should I work on 'data' directly
 
