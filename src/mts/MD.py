@@ -107,43 +107,4 @@ def get_delta(to_compare: pd.DataFrame):
 def optimize_space():
     ...
 # Section below is for tests and debugging, it needs to be moved to a separate file thought
-# My data
-normal_test = pd.DataFrame({'A': (1,6,3,3),
-                     'B' : (4,1,2,7),
-                    'C': (5,9,2,1)})
-
-abnormal_test = pd.DataFrame({'A': (5,6,3,5),
-                              'B' : (2,4,5,8),
-                              'C': (1,3,2,9)})
-
-# Mt cars
-from statsmodels.datasets import get_rdataset
-
-mtcars = get_rdataset("mtcars").data
-df = mtcars[["mpg", "disp","am"]]
-
-normal = df[df["am"] == 1]
-abnormal = df[df["am"] == 0]
-
-normal_test = normal.drop(columns="am")
-abnormal_test = abnormal.drop(columns="am")
-
-m_space = get_normal_space(normal_test)
-md = get_md(m_space)
-#print(md)
-#print(md.mean()) # I tested it and normal space is calculated properly
-#snrs = get_snrs_prot(md)
-
-ab_space = get_abnormal_space(m_space, abnormal_test)
-md = get_md(ab_space)
-print(md)
-print(md.mean())
-# = get_snr_prot(md)
-
-#oa_design = pd.DataFrame({'1': [1, 1, 0, 0], '2': [1, 0, 1, 0], '3': [1, 0, 0, 1]})
-
-#snrs = get_snrs_prot(oa_design, normal_test, abnormal_test)
-#compare_snr = compare_snr(oa_design, snrs)
-#delta = get_delta(compare_snr)
-#print(snrs)
 
