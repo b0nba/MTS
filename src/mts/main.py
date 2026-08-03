@@ -3,8 +3,6 @@ import numpy as np
 
 # Best approach will be to keep it in scikit-learn convention so before improving
 # I have to make sure code is similar enough to scikit-learn packages.
-# Thus, all pandas functions must be converted to 'numpy' or 'scipy'.
-
 def MTS(oa_design, data):
     '''
     I used this code as testing example:
