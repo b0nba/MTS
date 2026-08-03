@@ -26,19 +26,29 @@ def get_normal_space(normal_data): # maybe after all this should be names 'get_n
 
     return UnitSpace(mean=mean, std=std, corr_matrix_inv=corr_inv, z=z_scores) # Do I really need z scores? I can easily reconstruct them later
 
+# WARNING! This does not seem to work properly. I have to check if I have to recalculate corr_matrix for abnormal group.
+# Right now 'corr_matrix = abnormal_data.corr()' results not right with tests.
+# I have provided example code that works, but it needs to be checked with MTS.
 def get_abnormal_space(normal_space: UnitSpace, abnormal_data):
 
     z_scores = (abnormal_data - normal_space.mean) / normal_space.std
 
-    corr_matrix = abnormal_data.corr()
+    #corr_matrix = abnormal_data.corr() # <- is it this
+    '''
     corr_inv = pd.DataFrame( # since this gets used in get_abnormal and get_normal this stops to be DRY
         np.linalg.inv(corr_matrix.values),
         index=corr_matrix.columns,
         columns=corr_matrix.columns,
     )
-
+    
     return UnitSpace(mean=normal_space.mean, std=normal_space.std,corr_matrix_inv=corr_inv, z=z_scores)
-
+    '''
+    return UnitSpace( # this seems to work just fine with the test
+        mean=normal_space.mean,
+        std=normal_space.std,
+        corr_matrix_inv=normal_space.corr_matrix_inv,
+        z=z_scores,
+    )
 def get_md(us: UnitSpace):
     return np.diag(us.z @ us.corr_matrix_inv@ us.z.T) / len(us.z.columns)
 
@@ -97,6 +107,7 @@ def get_delta(to_compare: pd.DataFrame):
 def optimize_space():
     ...
 # Section below is for tests and debugging, it needs to be moved to a separate file thought
+# My data
 normal_test = pd.DataFrame({'A': (1,6,3,3),
                      'B' : (4,1,2,7),
                     'C': (5,9,2,1)})
@@ -105,14 +116,34 @@ abnormal_test = pd.DataFrame({'A': (5,6,3,5),
                               'B' : (2,4,5,8),
                               'C': (1,3,2,9)})
 
+# Mt cars
+from statsmodels.datasets import get_rdataset
+
+mtcars = get_rdataset("mtcars").data
+df = mtcars[["mpg", "disp","am"]]
+
+normal = df[df["am"] == 1]
+abnormal = df[df["am"] == 0]
+
+normal_test = normal.drop(columns="am")
+abnormal_test = abnormal.drop(columns="am")
+
 m_space = get_normal_space(normal_test)
+md = get_md(m_space)
+#print(md)
+#print(md.mean()) # I tested it and normal space is calculated properly
+#snrs = get_snrs_prot(md)
+
 ab_space = get_abnormal_space(m_space, abnormal_test)
 md = get_md(ab_space)
-snr = get_snr_prot(md)
+print(md)
+print(md.mean())
+# = get_snr_prot(md)
 
-oa_design = pd.DataFrame({'1': [1,1,0,0], '2':[1,0,1,0], '3':[1,0,0,1]})
+#oa_design = pd.DataFrame({'1': [1, 1, 0, 0], '2': [1, 0, 1, 0], '3': [1, 0, 0, 1]})
 
-snrs = get_snrs_prot(oa_design, normal_test,abnormal_test)
-compare_snr = compare_snr(oa_design,snrs)
-delta = get_delta(compare_snr)
-print(delta)
+#snrs = get_snrs_prot(oa_design, normal_test, abnormal_test)
+#compare_snr = compare_snr(oa_design, snrs)
+#delta = get_delta(compare_snr)
+#print(snrs)
+

@@ -2,7 +2,22 @@ import pandas as pd
 import numpy as np
 
 def MTS(oa_design, data):
+    '''
+    I used this code as testing example:
 
+    m_space = get_normal_space(normal_test)
+    ab_space = get_abnormal_space(m_space, abnormal_test)
+    md = get_md(ab_space)
+    snr = get_snr_prot(md)
+
+    oa_design = pd.DataFrame({'1': [1,1,0,0], '2':[1,0,1,0], '3':[1,0,0,1]})
+
+    snrs = get_snrs_prot(oa_design, normal_test,abnormal_test)
+    compare_snr = compare_snr(oa_design,snrs)
+    delta = get_delta(compare_snr)
+    print(delta)
+
+    '''
     #
     # Check if given arguments are proper
     #
