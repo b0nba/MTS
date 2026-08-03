@@ -49,8 +49,9 @@ def get_abnormal_space(normal_space: UnitSpace, abnormal_data):
         corr_matrix_inv=normal_space.corr_matrix_inv,
         z=z_scores,
     )
+
 def get_md(us: UnitSpace):
-    return np.diag(us.z @ us.corr_matrix_inv@ us.z.T) / len(us.z.columns)
+    return np.diag(us.z @ us.corr_matrix_inv @ us.z.T) / len(us.z.columns)
 
 # larger the better by default I should implement other thought
 def get_snr_prot(md):
