@@ -8,6 +8,9 @@ def MTS(oa_design, data):
     #
 
     #
+    # Separate normal and abnormal cases
+    #
+    #
     # Construct m_space (mahalanobis_space) for a normal group and check its validity
     #
 
