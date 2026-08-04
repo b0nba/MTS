@@ -3,14 +3,10 @@ import numpy as np
 
 # Best approach will be to keep it in scikit-learn convention so before improving
 # I have to make sure code is similar enough to scikit-learn packages.
+# Consider whether to split data or require format from a user.
 def MTS(oa_design, data):
     '''
     I used this code as testing example:
-
-    m_space = get_normal_space(normal_test)
-    ab_space = get_abnormal_space(m_space, abnormal_test)
-    md = get_md(ab_space)
-    snr = get_snr_prot(md)
 
     oa_design = pd.DataFrame({'1': [1,1,0,0], '2':[1,0,1,0], '3':[1,0,0,1]})
 
@@ -40,7 +36,7 @@ def MTS(oa_design, data):
     '''
     In my opinion this function should take:
     
-     oa_design, and data (arguments)
+     oa_design, and test_data (arguments)
      
     And should produce:
      
