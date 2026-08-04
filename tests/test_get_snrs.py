@@ -30,7 +30,7 @@ def test_ab_data():
 # Test to be removed later for now it only checks if the function is running
 def test_get_snrs_smoke(oa_design, test_n_data, test_ab_data):
 
-    snrs = md.get_snrs(oa_design.to_numpy(), test_n_data.to_numpy(), test_ab_data.to_numpy())
+    snrs = md.get_snrs(oa_design, test_n_data, test_ab_data)
 
     assert snrs is not None
     assert len(snrs) == len(oa_design)

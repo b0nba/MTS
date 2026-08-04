@@ -5,10 +5,10 @@ from dataclasses import replace
 
 @dataclass(frozen=True, eq=False)
 class UnitSpace:
-    mean: np.ndarray
-    std: np.ndarray
-    corr_matrix_inv: np.ndarray
-    z: np.ndarray
+    mean: pd.DataFrame
+    std: pd.DataFrame
+    corr_matrix_inv: pd.DataFrame
+    z: pd.DataFrame
 
 '''
 To Do: 
@@ -20,8 +20,7 @@ To Do:
 
 '''
 
-def get_normal_space(normal_data:np.ndarray):
-
+def get_normal_space(normal_data):
     mean = normal_data.mean()
     std = normal_data.std()
 
@@ -33,8 +32,7 @@ def get_normal_space(normal_data:np.ndarray):
         index=corr_matrix.columns,
         columns=corr_matrix.columns,
     )
-
-    return UnitSpace(mean=mean, std=std, corr_matrix_inv=corr_inv, z=z_scores) # Do I really need z scores? I can easily reconstruct them later
+    return UnitSpace(mean=mean, std=std, corr_matrix_inv=corr_inv, z=z_scores)
 
 def get_abnormal_space(normal_space: UnitSpace, abnormal_data):
     z_scores = (abnormal_data - normal_space.mean) / normal_space.std
@@ -51,17 +49,15 @@ def check_validity(df):
     md_mean = df['MD'].mean()
     print("MD mean (should be ~1):", md_mean)
 
-def get_snrs(oa_design: np.ndarray, data: np.ndarray, ab_data: np.ndarray):
+def get_snrs(oa_design: pd.DataFrame, data: pd.DataFrame, ab_data: pd.DataFrame):
 
     snrs = []
-    for row in oa_design: # row in oa_design.row() # why switch to_numpy(), ask user to ensure format and make it default
-    # 0. Get mask
-        mask = row.astype(bool)
+    for row in oa_design.to_numpy(): # row in oa_design.row() # why switch to_numpy(), ask user to ensure format and make it default
     # 1. Get test_data to calculate snr for
-        sub_m_data = data[:,mask] # this comes from pandas so it needs to be changed
-        sub_ab_data = ab_data[:,mask] # this comes from pandas as well so it needs to be changed
+        sub_m_data = data.loc[:,row.astype(bool)]
+        sub_ab_data = ab_data.loc[:,row.astype(bool)]
     # 2. Get sub_normal space
-        m_space = get_normal_space(sub_m_data[])
+        m_space = get_normal_space(sub_m_data)
     # 3. Get sub_abnormal space
         ab_space = get_abnormal_space(m_space, sub_ab_data)
      # 4. Get MD's for abnormal space
