@@ -1,16 +1,15 @@
 import numpy as np
 import pandas as pd
 import pytest
-from pathlib import Path
 
+import deprecated.mts.src.md as md
 import mts.md as md
-from statsmodels.datasets import get_rdataset
-from scipy.spatial.distance import mahalanobis
 
 '''
 To Do:
-
-1. Come back here when 'get_normal_space' is turned to be compatible with scikit-learn (change pandas to numpy)
+1. Consider what else to test (edge-cases) and prototype it.
+2. Repeat this to do for every new .py file created in this folder
+3. In the last file add "consider what do do next" in the last step of 'To Do' 
 '''
 @pytest.fixture
 def oa_design():
@@ -30,8 +29,10 @@ def test_ab_data():
 # Test to be removed later for now it only checks if the function is running
 def test_get_snrs_smoke(oa_design, test_n_data, test_ab_data):
 
-    snrs = md.get_snrs(oa_design, test_n_data, test_ab_data)
+    snrs = md.get_snrs(oa_design.to_numpy(), test_n_data.to_numpy(), test_ab_data.to_numpy())
 
     assert snrs is not None
     assert len(snrs) == len(oa_design)
     assert np.all(np.isfinite(snrs))
+
+

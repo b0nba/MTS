@@ -4,7 +4,6 @@ import pytest
 from pathlib import Path
 
 from mts.md import get_md, get_normal_space, get_abnormal_space
-from statsmodels.datasets import get_rdataset
 from scipy.spatial.distance import mahalanobis
 
 '''
@@ -12,6 +11,8 @@ To Do:
 
 1. Consider what else to test (edge-cases) and prototype it 
 2. Resolve current comments
+3. Create test.py files for all functions inside od md.py
+4. Head to test_get_normal_space.py
 
 '''
 @pytest.fixture
@@ -25,7 +26,7 @@ DATA_DIR = Path(__file__).parent / "test_data"
 def test_check_negative_input(test_data):
     negative_input = test_data * -1
 
-    m_space = get_normal_space(negative_input)
+    m_space = get_normal_space(negative_input.to_numpy())
     md = get_md(m_space)
 
     assert np.all(md > 0)
@@ -34,7 +35,7 @@ def test_mixed_input(test_data):
     mixed_design_vec = np.array([1,-1,-1])
     mixed_input = test_data *  mixed_design_vec
 
-    m_space = get_normal_space(mixed_input)
+    m_space = get_normal_space(mixed_input.to_numpy())
     md = get_md(m_space)
 
     assert np.all(md > 0)
@@ -45,7 +46,7 @@ def test_produces_nan(test_data):
     nan_design_vec = np.array([1, np.nan, -1])
     nan_input = test_data * nan_design_vec
 
-    m_space = get_normal_space(nan_input)
+    m_space = get_normal_space(nan_input.to_numpy())
     md = get_md(m_space)
 
     #assert np.all(md > 0)
@@ -70,11 +71,11 @@ def test_compare_md_metric_gate():
     normal_test = normal.drop(columns="am")
     abnormal_test = abnormal.drop(columns="am")
 
-    n_space = get_normal_space(normal_test)
+    n_space = get_normal_space(normal_test.to_numpy())
     normal_test = get_md(n_space)
     normal_test = normal_test.round(4)
     
-    ab_space = get_abnormal_space(n_space,abnormal_test)
+    ab_space = get_abnormal_space(n_space,abnormal_test.to_numpy())
     abnormal_test = get_md(ab_space)
     abnormal_test = abnormal_test.round(4)
 
@@ -95,7 +96,7 @@ def test_compare_md_metric_gate():
 # Compared with scipy (https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.distance.mahalanobis.html)
 def test_compare_md_scipy(test_data):
 
-    m_space = get_normal_space(test_data)
+    m_space = get_normal_space(test_data.to_numpy())
     md_project = get_md(m_space)
 
     z_scores = np.asarray(m_space.z)

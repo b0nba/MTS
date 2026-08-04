@@ -1,12 +1,11 @@
 import pytest
-import numpy as np
 import pandas as pd
 
-from mts.md import UnitSpace,get_normal_space
 '''
 To Do: 
 
-1. Consider what else to test (edge-cases) and prototype it
+1. Consider what else to test (edge-cases) and prototype it.
+2. Head to 'test_get_snrs.py'
 '''
 @pytest.fixture
 def test_data():

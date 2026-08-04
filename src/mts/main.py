@@ -1,9 +1,14 @@
 import pandas as pd
 import numpy as np
 
+'''
+1. Check comments, and remove if not needed.
+2. Design MTS class, prototype all the methods.
+3. Name modules inside of 'src' more appropriately.
+3. After that head to test_get_md.py for further instructions.
+'''
 # Best approach will be to keep it in scikit-learn convention so before improving
 # I have to make sure code is similar enough to scikit-learn packages.
-# Consider whether to split data or require format from a user.
 def MTS(oa_design, data):
     '''
     I used this code as testing example:
@@ -24,6 +29,7 @@ def MTS(oa_design, data):
     # Separate normal and abnormal cases
     #
     #
+
     # Construct m_space (mahalanobis_space) for a normal group and check its validity
     #
 
