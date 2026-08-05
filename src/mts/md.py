@@ -16,13 +16,12 @@ class UnitSpace:
 '''
 To Do: 
 
--1. Test compare_snrs with deprecated/mts/src/md.py compare_snrs
- 0. Convert all functions to use numpy instead of pandas
- 1. Implement nominal the better and lower the better inside of 'get_snr_prot'.
+0. Convert all functions to use numpy instead of pandas
+1. Implement nominal the better and lower the better inside of 'get_snr_prot'.
     a. Rename 'get_snr_prot' after implementation    
- 2. Implement additional space validation methods inside of 'check_validity'.
- 3. Check comments inside of 'get_snrs' function and remove if they are no needed
- 4. After that head to main.py for further instructions.
+2. Implement additional space validation methods inside of 'check_validity'.
+3. Check comments inside of 'get_snrs' function and remove if they are no needed
+4. After that head to main.py for further instructions.
 
 '''
 
