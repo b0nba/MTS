@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 import pytest
 
-import deprecated.mts.src.md as md
 import mts.md as md
 
 '''

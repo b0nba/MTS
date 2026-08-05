@@ -3,6 +3,9 @@ import pandas as pd
 import numpy as np
 from dataclasses import replace
 
+from pandas.core.dtypes import astype
+
+
 @dataclass(frozen=True, eq=False)
 class UnitSpace:
     mean: np.ndarray
@@ -13,13 +16,13 @@ class UnitSpace:
 '''
 To Do: 
 
-0. Convert all functions to use numpy instead of pandas
-1. Implement nominal the better and lower the better inside of 'get_snr_prot'.
-    a. Rename 'get_snr_prot' after implementation
-    
-2. Implement additional space validation methods inside of 'check_validity'.
-3. Check comments inside of 'get_snrs' function and remove if they are no needed
-4. After that head to main.py for further instructions.
+-1. Test compare_snrs with deprecated/mts/src/md.py compare_snrs
+ 0. Convert all functions to use numpy instead of pandas
+ 1. Implement nominal the better and lower the better inside of 'get_snr_prot'.
+    a. Rename 'get_snr_prot' after implementation    
+ 2. Implement additional space validation methods inside of 'check_validity'.
+ 3. Check comments inside of 'get_snrs' function and remove if they are no needed
+ 4. After that head to main.py for further instructions.
 
 '''
 
@@ -30,7 +33,7 @@ def get_normal_space(normal_data: np.ndarray):
 
     z_scores = (normal_data - mean) / std # consider moving it ot get_md as it is used only there
 
-    corr_matrix = np.atleast_2d(np.corrcoef(normal_data, rowvar=False))
+    corr_matrix = np.atleast_2d(np.corrcoef(normal_data,rowvar=False))
     corr_inv = np.linalg.inv(corr_matrix)
 
     return UnitSpace(mean=mean, std=std, corr_matrix_inv=corr_inv, z=z_scores)
@@ -54,7 +57,7 @@ def check_validity(df):
 def get_snrs(oa_design: np.ndarray, data: np.ndarray, ab_data: np.ndarray):
 
     snrs = []
-    for row in oa_design: # row in oa_design.row() # why switch to_numpy(), ask user to ensure format and make it default
+    for row in oa_design:
     # 0. Mask
         mask = row.astype(bool)
     # 1. Get test_data to calculate snr for
@@ -71,22 +74,25 @@ def get_snrs(oa_design: np.ndarray, data: np.ndarray, ab_data: np.ndarray):
     # 6. Save SNR for CURRENT row in oa_design_row
         snrs.append(snr)
 
-    # Return list of SNR for each of OA design rows
+    # Return np.array of SNR for each of OA design rows
     snrs = np.array(snrs)
     return snrs
 
-def compare_snr(OA: pd.DataFrame, snr:pd.Series ):
+def compare_snr(oa: np.ndarray, snr: np.ndarray):
 
-    result = pd.DataFrame()
-    for variable in OA.columns:
+    result = []
 
-        mean_on = snr[OA[variable] == 1].mean()
-        mean_off = snr[OA[variable] == 0].mean()
+    for variable in oa.T: # .T makes it to iterate columns instead of rows
 
-        result[variable] = {'included': mean_on,
-                            'excluded': mean_off}
+        mask = variable.astype(bool)
 
-    return result
+        mean_on = np.mean(snr[mask])
+        mean_off = np.mean(snr[~mask])
+
+        result.append([mean_on, mean_off])
+
+    print(result)
+    return np.array(result).T
 
 def get_delta(to_compare: pd.DataFrame):
     return abs(to_compare.loc['included'] - to_compare.loc['excluded'])
