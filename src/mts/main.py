@@ -2,34 +2,42 @@ import pandas as pd
 import numpy as np
 
 '''
-1. Check comments, and remove if not needed.
+To Do: 
+
+1. Read LogisticRegression() class from sklearn
+    a. Resolve comments starting with "-".
 2. Design MTS class, prototype all the methods.
-3. Name modules inside of 'src' more appropriately.
+3. Name functions inside of 'src' more appropriately.
+4. Incorporate functions from src into MTS class.
 3. After that head to test_get_md.py for further instructions.
 '''
-# Best approach will be to keep it in scikit-learn convention so before improving
-# I have to make sure code is similar enough to scikit-learn packages.
-def MTS(oa_design, data):
-    '''
-    I used this code as testing example:
 
-    oa_design = pd.DataFrame({'1': [1,1,0,0], '2':[1,0,1,0], '3':[1,0,0,1]})
-
-    snrs = get_snrs_prot(oa_design, normal_test,abnormal_test)
-    compare_snr = compare_snr(oa_design,snrs)
-    delta = get_delta(compare_snr)
-    print(delta)
+class MTS:
 
     '''
+    Example class construction from sklearn (LogisticRegression):
+
+        Does the following (step by step):
+        1. Checks given inputs.
+            a. Produces a warnings when given input is deprecated.
+            b. Produces a warning when given input is invalid or not supported.
+            d. Produces a warning when given inputs contradict each other.
+            c. Sets local (not self) variables values.
+            - Check if that's all ???
+        2. Validates the data.
+            - Check if that's all ???
+
+    '''
+
+    #
+    # Separate normal and abnormal cases
+    #
+
     #
     # Check if given arguments are proper
     #
 
     #
-    # Separate normal and abnormal cases
-    #
-    #
-
     # Construct m_space (mahalanobis_space) for a normal group and check its validity
     #
 
@@ -37,18 +45,13 @@ def MTS(oa_design, data):
     # Optimize a normal space using OA.
     #
 
-    return 0 # what should it return???
 
-    '''
-    In my opinion this function should take:
+    def __init__(self):
+        ...
+
+    def split_dataset(self):
+        ...
     
-     oa_design, and test_data (arguments)
-     
-    And should produce:
-     
-    reduced normal space, SNR with and without a variable, delta. (returns)
-    
-    I should consider making it a class over a function as the final functionality my consist of many functions.
-    '''
+
 
 

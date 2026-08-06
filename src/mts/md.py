@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-import pandas as pd
 import numpy as np
 from dataclasses import replace
 
@@ -15,13 +14,6 @@ class UnitSpace:
 
 '''
 To Do: 
-
-0. Convert all functions to use numpy instead of pandas
-1. Implement nominal the better and lower the better inside of 'get_snr_prot'.
-    a. Rename 'get_snr_prot' after implementation    
-2. Implement additional space validation methods inside of 'check_validity'.
-3. Check comments inside of 'get_snrs' function and remove if they are no needed
-4. After that head to main.py for further instructions.
 
 '''
 
@@ -45,35 +37,52 @@ def get_md(us: UnitSpace):
     col_amount = us.z.shape[1]
     return np.diag(us.z @ us.corr_matrix_inv @ us.z.T) / col_amount
 
-# larger the better by default I should implement other thought
-def get_snr_prot(md):
+def get_snr_ltb(md):
     return -10 * np.log10(np.mean(1 / md ** 2))
 
-def check_validity(df):
-    md_mean = df['MD'].mean()
-    print("MD mean (should be ~1):", md_mean)
+def get_snr_stb(md):
+    return -10 * np.log10(np.mean(md ** 2))
+
+def get_snr_ntb_target(md: np.ndarray, target=1.0):
+    variance = np.var(md, ddof=1)
+    return 10 * np.log10(target**2 / variance)
+
+def check_validity(md_normal: np.ndarray, md_abnormal: np.ndarray):
+    md_mean_n = np.mean(md_normal)
+    snr = get_snr_ntb_target(md_normal)
+    print("\nMD mean (should be ~ 1):", md_mean_n)
+    print("SNR:", snr)
+
+    md_mean_ab = np.mean(md_abnormal)
+
+    print(f"MD mean for normal space is:   {md_mean_n} \nMD mean for abnormal space is: {md_mean_ab}")
+
+    separation = md_mean_ab/md_mean_n
+
+    print(f"Separation: {separation}")
+
+
 
 def get_snrs(oa_design: np.ndarray, data: np.ndarray, ab_data: np.ndarray):
 
     snrs = []
     for row in oa_design:
-    # 0. Mask
+
         mask = row.astype(bool)
-    # 1. Get test_data to calculate snr for
+
         sub_m_data = data[:,mask]
         sub_ab_data = ab_data[:,mask]
-    # 2. Get sub_normal space
-        m_space = get_normal_space(sub_m_data)
-    # 3. Get sub_abnormal space
-        ab_space = get_abnormal_space(m_space, sub_ab_data)
-     # 4. Get MD's for abnormal space
+
+        m_space = get_normal_space(sub_m_data) # sub-normal space
+
+        ab_space = get_abnormal_space(m_space, sub_ab_data) # sub-abnormal space
+
         md = get_md(ab_space)
-    # 5. Get SNR for abnormal space
-        snr = get_snr_prot(md)
-    # 6. Save SNR for CURRENT row in oa_design_row
+
+        snr = get_snr_ltb(md) # Using larger the better as default SNR.
+
         snrs.append(snr)
 
-    # Return np.array of SNR for each of OA design rows
     snrs = np.array(snrs)
     return snrs
 
@@ -88,15 +97,17 @@ def compare_snr(oa: np.ndarray, snr: np.ndarray):
         mean_on = np.mean(snr[mask])
         mean_off = np.mean(snr[~mask])
 
-        result.append([mean_on, mean_off])
+        result.append([mean_off,mean_on]) # Excluded 'index = 0' and included 'index = 1' to make it intuitional.
 
-    print(result)
     return np.array(result).T
 
-def get_delta(to_compare: pd.DataFrame):
-    return abs(to_compare.loc['included'] - to_compare.loc['excluded'])
-    # this one does simple subtraction to get change in snr in included vs excluded case
+def get_delta(to_compare: np.ndarray):
+
+    id_excluded = 0
+    id_included = 1
+
+    return abs(to_compare[id_included] - to_compare[id_excluded])
 
 def optimize_space():
     ...
-# Section below is for tests and debugging, it needs to be moved to a separate file thought
+

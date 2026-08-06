@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "mts"
+name = "mts-deprecated"
 version = "0.1.0"
-description = " "
+description = " This is for testing only"
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
@@ -21,7 +21,5 @@ dev = [
 ]
 
 [tool.setuptools.packages.find]
-where = ["src", "deprecated/mts/src"]
+where = ["src"]
 
-[tool.pytest.ini_options]
-testpaths = ["tests"]

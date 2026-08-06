@@ -3,7 +3,7 @@ import pandas as pd
 import pytest
 
 from mts.md import compare_snr
-
+import deprecated.mts.src.md as dp
 @pytest.fixture
 def oa_design():
     return pd.DataFrame({'1': [1, 1, 0, 0],
@@ -16,7 +16,12 @@ def snrs():
 
 def test_compare_snr_smoke(oa_design, snrs):
     result = compare_snr(oa_design.to_numpy(), snrs)
-    print(result)
 
-def test_compare_snr_panads_vs_nunpy():
-    ...
+    assert result is not None
+
+def test_compare_snr_panads_vs_numpy(oa_design, snrs):
+    result_current = compare_snr(oa_design.to_numpy(), snrs)
+    result_deprecated = dp.compare_snr(oa_design, snrs)
+
+    np.testing.assert_allclose(result_current, result_deprecated)
+    assert result_current == pytest.approx(result_deprecated)
