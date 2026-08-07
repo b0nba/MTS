@@ -59,9 +59,7 @@ def check_validity(md_normal: np.ndarray, md_abnormal: np.ndarray):
 
     separation = md_mean_ab/md_mean_n
 
-    print(f"Separation: {separation}")
-
-
+    print(f"Separation: {separation}"
 
 def get_snrs(oa_design: np.ndarray, data: np.ndarray, ab_data: np.ndarray):
 
