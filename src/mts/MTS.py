@@ -7,7 +7,7 @@ from sklearn.metrics import euclidean_distances
 '''
 To Do: 
 
-- In a meantime read: https://scikit-learn.org/dev/developers/contributing.html#new-contributors 
+- In a meantime read: https://scikit-learn.org/stable/developers/develop.html#api-overview
     to learn how to make this package integration-ready. 
     
 1. Design MTS class, prototype all the methods.
