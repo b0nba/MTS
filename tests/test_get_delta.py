@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from mts.md import compare_snr, get_delta
+from mts._math import compare_snr, get_delta
 from deprecated.mts.src import md as dp
 
 @pytest.fixture

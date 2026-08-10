@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from mts.md import get_md, get_normal_space, get_abnormal_space, check_validity
+from mts._math import get_md, get_normal_space, get_abnormal_space, check_validity
 
 @pytest.fixture
 def test_n_data():

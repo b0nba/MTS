@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-import mts.md as md
+import mts._math as md
 
 '''
 To Do:

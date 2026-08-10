@@ -1,6 +1,8 @@
-import pandas as pd
 import numpy as np
-import sklearn as sk
+from sklearn.base import BaseEstimator, ClassifierMixin
+from sklearn.utils.validation import validate_data, check_is_fitted
+from sklearn.utils.multiclass import unique_labels
+from sklearn.metrics import euclidean_distances
 
 '''
 To Do: 
@@ -15,7 +17,7 @@ To Do:
 
 '''
 
-class MTS:
+class MTS(ClassifierMixin, BaseEstimator):
 
     '''
 
@@ -25,7 +27,7 @@ class MTS:
 
     To do:
     1. Make this library integration ready with scikit-learn.
-        a. Learn how api objects work: https://scikit-learn.org/dev/developers/develop.html#api-overview
+        a. Read: https://scikit-learn.org/dev/developers/develop.html#api-overview
 
         Note:
             Q: Shouldn't MTS use fit_transform(), since it optimizes and returns an
@@ -57,33 +59,35 @@ class MTS:
         predict():
             https://scikit-learn.org/dev/glossary.html#term-predict
 
+    2. Fix broken paths in tests '.py' modules.
     '''
 
-    #
-    # Separate normal and abnormal cases
-    #
+    def __init__(self, demo_param='demo'):
+        self.demo_param = demo_param
+        # add: optimization algorithm parameter
 
-    #
-    # Check if given arguments are proper
-    #
+    def fit(self, X, y):
+        # Check that X and y have correct shape, set n_features_in_, etc.
+        X, y = validate_data(self, X, y)
+        # Store the classes seen during fit
+        self.classes_ = unique_labels(y)
 
-    #
-    # Construct m_space (mahalanobis_space) for a normal group and check its validity
-    #
+        self.X_ = X
+        self.y_ = y
+        # Return the classifier
+        return self
 
-    #
-    # Optimize a normal space using OA.
-    #
+    def predict(self, X):
+        # Check if fit has been called
+        check_is_fitted(self)
+
+        # Input validation
+        X = validate_data(self, X, reset=False)
+
+        closest = np.argmin(euclidean_distances(X, self.X_), axis=1)
+        return self.y_[closest]
 
 
-    def __init__(self):
-        ...
-
-    def split_dataset(self):
-        ...
-
-    def fit(self):
-        ...
 
 
 

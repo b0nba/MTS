@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from mts.md import compare_snr
+from mts._math import compare_snr
 import deprecated.mts.src.md as dp
 @pytest.fixture
 def oa_design():

@@ -59,16 +59,16 @@ def check_validity(md_normal: np.ndarray, md_abnormal: np.ndarray):
 
     separation = md_mean_ab/md_mean_n
 
-    print(f"Separation: {separation}"
+    print(f"Separation: {separation}")
 
-def get_snrs(oa_design: np.ndarray, data: np.ndarray, ab_data: np.ndarray):
+def get_snrs(oa_design: np.ndarray, normal_data: np.ndarray, ab_data: np.ndarray):
 
     snrs = []
     for row in oa_design:
 
         mask = row.astype(bool)
 
-        sub_m_data = data[:,mask]
+        sub_m_data = normal_data[:,mask]
         sub_ab_data = ab_data[:,mask]
 
         m_space = get_normal_space(sub_m_data) # sub-normal space
@@ -95,7 +95,7 @@ def compare_snr(oa: np.ndarray, snr: np.ndarray):
         mean_on = np.mean(snr[mask])
         mean_off = np.mean(snr[~mask])
 
-        result.append([mean_off,mean_on]) # Excluded 'index = 0' and included 'index = 1' to make it intuitional.
+        result.append([mean_off,mean_on]) # Excluded == 'index = 0' and included == 'index = 1' to make it more readable.
 
     return np.array(result).T
 
@@ -106,6 +106,11 @@ def get_delta(to_compare: np.ndarray):
 
     return abs(to_compare[id_included] - to_compare[id_excluded])
 
-def optimize_space():
-    ...
+def optimize_space(normal_data: np.ndarray, abnormal_data: np.ndarray, oa_design: np.ndarray):
+    snrs = get_snrs(oa_design, normal_data, abnormal_data)
+    compared = compare_snr(oa_design,snrs)
+    deltas = get_delta(compared)
+
+    # Make a decision based on deltas, and return optimized dataset?
+    return 0
 
