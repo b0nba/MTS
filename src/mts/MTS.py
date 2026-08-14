@@ -72,7 +72,8 @@ class MTS(ClassifierMixin, BaseEstimator):
         # Store the classes seen during fit
         self.classes_ = unique_labels(y)
 
-        self.X_ = X
+        self.X_ = X # AI says that this notation "X_" is used for storing 'fitted' variables. If that's true
+        # check it with sklearn docs and change code below so it uses X instead of X_.
         self.y_ = y
 
         # This is for test only move/remove later. This prepares data for initial validation step, it should be refactored and moved up or left in this place.
