@@ -78,8 +78,8 @@ class MTS(ClassifierMixin, BaseEstimator):
         # This is for test only move/remove later. This prepares data for initial validation step, it should be refactored and moved up or left in this place.
         # Make sure to make it according with sklearn.
         print(self.X_[self.y_ == 1])
-        m_space = m.get_normal_space(self.X_[self.y_ == 1])
-        ab_space = m.get_abnormal_space(m_space, self.X_[self.y_ == 0])
+        m_space = m.get_normal_space(self.X_[self.y_ == 1]) # This is probably wrong check it with sklearn or do propper mapping.
+        ab_space = m.get_abnormal_space(m_space, self.X_[self.y_ == 0]) # and this ofc too
         md_n = m.get_md(m_space)
         md_ab = m.get_md(ab_space)
         m.check_validity(md_n, md_ab)
