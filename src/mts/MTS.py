@@ -4,14 +4,16 @@ from sklearn.utils.validation import validate_data, check_is_fitted
 from sklearn.utils.multiclass import unique_labels
 from sklearn.metrics import euclidean_distances
 
+import mts._math as m
+
 '''
 To Do: 
 
 - In a meantime read: https://scikit-learn.org/stable/developers/develop.html#api-overview
     to learn how to make this package integration-ready. 
-    
+0. Think about how to prepare MTS class for different optimization methods (eg. Bee Hive Algorithm)   
 1. Design MTS class, prototype all the methods.
-2. Name functions inside of 'src' more appropriately.
+2. Name modules inside of 'src' more appropriately.
 3. Incorporate functions from src into MTS class.
 4. After that head to test_get_md.py for further instructions.
 
@@ -62,18 +64,27 @@ class MTS(ClassifierMixin, BaseEstimator):
     2. Fix broken paths in tests '.py' modules.
     '''
 
-    def __init__(self, demo_param='demo'):
-        self.demo_param = demo_param
-        # add: optimization algorithm parameter
+    def __init__(self, opt = "oa"):
+        self.opt = opt
 
     def fit(self, X, y):
-        # Check that X and y have correct shape, set n_features_in_, etc.
         X, y = validate_data(self, X, y)
         # Store the classes seen during fit
         self.classes_ = unique_labels(y)
 
         self.X_ = X
         self.y_ = y
+
+        # This is for test only move/remove later. This prepares data for initial validation step, it should be refactored and moved up or left in this place.
+        # Make sure to make it according with sklearn.
+        print(self.X_[self.y_ == 1])
+        m_space = m.get_normal_space(self.X_[self.y_ == 1])
+        ab_space = m.get_abnormal_space(m_space, self.X_[self.y_ == 0])
+        md_n = m.get_md(m_space)
+        md_ab = m.get_md(ab_space)
+        m.check_validity(md_n, md_ab)
+        # end
+
         # Return the classifier
         return self
 

@@ -11,12 +11,13 @@ def oa_design():
 
 @pytest.fixture
 def test_n_data():
-    return pd.DataFrame({'A': (1, 6, 3, 3),
-                          'B': (4, 1, 2, 7),
-                          'C': (5, 9, 2, 1)})
+    return pd.DataFrame({'A': (1, 6, 3, 3, 4, 2),
+                          'B': (4, 1, 2, 7, 5, 9),
+                          'C': (5, 9, 2, 1, 1, 8)})
+
 @pytest.fixture
 def y():
-    return np.array([1, 0, 0, 1])
+    return np.array([1, 0, 1, 1,  0,0])
 
 def test_MTS_smoke(test_n_data, y):
     mts = MTS.MTS()
