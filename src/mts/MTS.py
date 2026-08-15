@@ -5,12 +5,17 @@ from sklearn.utils.multiclass import unique_labels
 from sklearn.metrics import euclidean_distances
 
 import mts._math as m
+from mts.src.md import get_snrs, optimize_space
+
+from tests.test_get_snrs import oa_design
 
 '''
 To Do: 
 
 - In a meantime read: https://scikit-learn.org/stable/developers/develop.html#api-overview
     to learn how to make this package integration-ready. 
+    
+-1. First finish 'optimize_space' function in _math.py. Decide how space will be optimized.
 0. Think about how to prepare MTS class for different optimization methods (eg. Bee Hive Algorithm)   
 1. Design MTS class, prototype all the methods.
 2. Name modules inside of 'src' more appropriately.
@@ -65,7 +70,7 @@ class MTS(ClassifierMixin, BaseEstimator):
     '''
 
     def __init__(self, opt = "oa"):
-        self.opt = opt
+        self.opt = opt # opt has to be a class that is storing optimization specifics
 
     def fit(self, X, y):
         X, y = validate_data(self, X, y)
@@ -84,6 +89,8 @@ class MTS(ClassifierMixin, BaseEstimator):
         md_n = m.get_md(m_space)
         md_ab = m.get_md(ab_space)
         m.check_validity(md_n, md_ab)
+
+        opt_space = optimize_space(normal_data = self.X_[self.y_ == 1], abnormal_data = self.X_[self.y_ == 0])
         # end
 
         # Return the classifier
