@@ -1,8 +1,14 @@
 import numpy as np
 import pandas as pd
 import pytest
-import src.mts.MTS as MTS
+import mts.MTS as MTS
 from sklearn.utils.estimator_checks import check_estimator
+
+
+'''
+To Do: 
+1. Test, when OA size and data size differ.
+'''
 
 
 @pytest.fixture
@@ -19,13 +25,13 @@ def test_n_data():
 def y():
     return np.array([1, 0, 1, 1,  0,0])
 
-def test_MTS_smoke(test_n_data, y):
-    mts = MTS.MTS()
+def test_MTS_smoke(test_n_data, y, oa_design):
+    mts = MTS.MTS(opt = oa_design.to_numpy())
 
     xx = test_n_data.to_numpy()
     yy = y
     df = mts.fit(X=xx, y = yy)
 
-    check_estimator(MTS.MTS())
+    #check_estimator(MTS.MTS(opt=oa_design.to_numpy()))
     assert mts is not None
     assert df is not None

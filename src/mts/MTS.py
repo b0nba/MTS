@@ -5,8 +5,6 @@ from sklearn.utils.multiclass import unique_labels
 from sklearn.metrics import euclidean_distances
 
 import mts._math as m
-from mts.src.md import get_snrs, optimize_space
-
 from tests.test_get_snrs import oa_design
 
 '''
@@ -46,7 +44,7 @@ class MTS(ClassifierMixin, BaseEstimator):
             conventions:
 
                 1. fit() builds the Mahalanobis Normal Space, evaluates orthogonal array
-                   runs, and determines the optimal feature subset.
+                   runs, and determines the optimal feature subset and threshold.
                 2. transform() applies the learned feature selection to any dataset with
                     the same feature schema as the dataset provided to fit().
                 3. fit_transform() naturally combines fit() and transform(), returning
@@ -69,8 +67,9 @@ class MTS(ClassifierMixin, BaseEstimator):
     2. Fix broken paths in tests '.py' modules.
     '''
 
-    def __init__(self, opt = "oa"):
-        self.opt = opt # opt has to be a class that is storing optimization specifics
+    def __init__(self, opt):
+        self.opt = opt # opt has to be a class that is storing optimization specifics # check if it is correct with sklearn
+        self.threshold = None # parameter how to calculate threshold
 
     def fit(self, X, y):
         X, y = validate_data(self, X, y)
@@ -82,7 +81,7 @@ class MTS(ClassifierMixin, BaseEstimator):
         self.y_ = y
 
         # This is for test only move/remove later. This prepares data for initial validation step, it should be refactored and moved up or left in this place.
-        # Make sure to make it according with sklearn.
+        # Make sure to make it according to sklearn.
         print(self.X_[self.y_ == 1])
         m_space = m.get_normal_space(self.X_[self.y_ == 1]) # This is probably wrong check it with sklearn or do propper mapping.
         ab_space = m.get_abnormal_space(m_space, self.X_[self.y_ == 0]) # and this ofc too
@@ -90,7 +89,9 @@ class MTS(ClassifierMixin, BaseEstimator):
         md_ab = m.get_md(ab_space)
         m.check_validity(md_n, md_ab)
 
-        opt_space = optimize_space(normal_data = self.X_[self.y_ == 1], abnormal_data = self.X_[self.y_ == 0])
+        oa_d = self.opt
+        # Here actual MTS is going on
+        opt_space = m.optimize_space(normal_data = self.X_[self.y_ == 1], abnormal_data = self.X_[self.y_ == 0], oa_design = oa_d) # make it to save to self instead
         # end
 
         # Return the classifier

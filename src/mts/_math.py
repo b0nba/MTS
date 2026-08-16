@@ -111,6 +111,9 @@ def optimize_space(normal_data: np.ndarray, abnormal_data: np.ndarray, oa_design
     compared = compare_snr(oa_design,snrs)
     deltas = get_delta(compared)
 
-    # Make a decision based on deltas, and return optimized dataset?
+    # Function which returns most optimal space
+    # And setting up a threshold (probably in a different function)
+    # Make a decision based on deltas, and set threshold?
+    #
     return 0
 
