@@ -67,9 +67,9 @@ class MTS(ClassifierMixin, BaseEstimator):
     2. Fix broken paths in tests '.py' modules.
     '''
 
-    def __init__(self, opt):
+    def __init__(self, opt, threshold):
         self.opt = opt # opt has to be a class that is storing optimization specifics # check if it is correct with sklearn
-        self.threshold = None # parameter how to calculate threshold
+        self.threshold = threshold # parameter how to calculate threshold
 
     def fit(self, X, y):
         X, y = validate_data(self, X, y)
@@ -91,7 +91,7 @@ class MTS(ClassifierMixin, BaseEstimator):
 
         oa_d = self.opt
         # Here actual MTS is going on
-        opt_space = m.optimize_space(normal_data = self.X_[self.y_ == 1], abnormal_data = self.X_[self.y_ == 0], oa_design = oa_d) # make it to save to self instead
+        self.X_ = m.optimize_space(normal_data = self.X_[self.y_ == 1], abnormal_data = self.X_[self.y_ == 0], oa_design = oa_d) # make it to save to self instead
         # end
 
         # Return the classifier

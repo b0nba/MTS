@@ -26,12 +26,12 @@ def y():
     return np.array([1, 0, 1, 1,  0,0])
 
 def test_MTS_smoke(test_n_data, y, oa_design):
-    mts = MTS.MTS(opt = oa_design.to_numpy())
+    mts = MTS.MTS(opt = oa_design.to_numpy(), threshold=1.0)
 
     xx = test_n_data.to_numpy()
     yy = y
     df = mts.fit(X=xx, y = yy)
 
-    #check_estimator(MTS.MTS(opt=oa_design.to_numpy()))
+    # check_estimator(MTS.MTS(opt=oa_design.to_numpy(),threshold=1.0)) # This is for sklean guidelines check.
     assert mts is not None
     assert df is not None
