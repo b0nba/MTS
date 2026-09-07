@@ -1,37 +1,47 @@
 import numpy as np
-import pandas as pd
-import pytest
-import mts.MTS as MTS
-from sklearn.utils.estimator_checks import check_estimator
+
+from mts.MTS import MTS
 
 
-'''
-To Do: 
-1. Test, when OA size and data size differ.
-'''
+def test_mts_fit_and_predict():
+    X_train = np.array([
+        [1.0, 2.0, 3.0],
+        [1.1, 2.2, 2.9],
+        [0.9, 1.8, 3.1],
+        [1.2, 2.1, 3.2],
+        [0.8, 1.9, 2.8],
 
+        [5.0, 6.0, 3.1],
+        [4.8, 5.7, 3.0],
+        [5.2, 6.2, 2.9],
+    ])
 
-@pytest.fixture
-def oa_design():
-    return pd.DataFrame({'1': [1, 1, 0, 0], '2': [1, 0, 1, 0], '3': [1, 0, 0, 1]})
+    y_train = np.array([
+        1, 1, 1, 1, 1,
+        0, 0, 0
+    ])
 
-@pytest.fixture
-def test_n_data():
-    return pd.DataFrame({'A': (1, 6, 3, 3, 4, 2),
-                          'B': (4, 1, 2, 7, 5, 9),
-                          'C': (5, 9, 2, 1, 1, 8)})
+    oa_design = np.array([
+        [1, 1, 1],
+        [1, 0, 0],
+        [0, 1, 0],
+        [0, 0, 1],
+    ])
 
-@pytest.fixture
-def y():
-    return np.array([1, 0, 1, 1,  0,0])
+    model = MTS(
+        opt=oa_design,
+        threshold=0.0
+    )
 
-def test_MTS_smoke(test_n_data, y, oa_design):
-    mts = MTS.MTS(opt = oa_design.to_numpy(), threshold=1.0)
+    model.fit(X_train, y_train)
 
-    xx = test_n_data.to_numpy()
-    yy = y
-    df = mts.fit(X=xx, y = yy)
+    X_test = np.array([
+        [1.0, 2.1, 3.0],
+        [5.5, 6.0, 3.1],
+    ])
 
-    # check_estimator(MTS.MTS(opt=oa_design.to_numpy(),threshold=1.0)) # This is for sklean guidelines check.
-    assert mts is not None
-    assert df is not None
+    predictions = model.predict(X_test)
+
+    assert model.selected_features_.shape == (3,)
+    assert predictions.shape == (2,)
+    assert set(predictions).issubset({0, 1})
