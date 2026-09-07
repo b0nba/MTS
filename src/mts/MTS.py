@@ -1,8 +1,5 @@
 import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin
-from sklearn.utils.validation import validate_data, check_is_fitted
-from sklearn.utils.multiclass import unique_labels
-from sklearn.metrics import euclidean_distances
 
 import mts._math as m
 from tests.test_get_snrs import oa_design
@@ -69,45 +66,44 @@ class MTS(ClassifierMixin, BaseEstimator):
 
     def __init__(self, opt, threshold):
         self.opt = opt # opt has to be a class that is storing optimization specifics # check if it is correct with sklearn
-        self.threshold = threshold # parameter how to calculate threshold
+        self.threshold = threshold # delta SNR threshold used for feature selection
 
     def fit(self, X, y):
-        X, y = validate_data(self, X, y)
         # Store the classes seen during fit
-        self.classes_ = unique_labels(y)
+        self.classes_ = np.unique(y)
 
-        self.X_ = X # AI says that this notation "X_" is used for storing 'fitted' variables. If that's true
-        # check it with sklearn docs and change code below so it uses X instead of X_.
+        self.X_ = X
         self.y_ = y
 
         # This is for test only move/remove later. This prepares data for initial validation step, it should be refactored and moved up or left in this place.
-        # Make sure to make it according to sklearn.
         print(self.X_[self.y_ == 1])
-        m_space = m.get_normal_space(self.X_[self.y_ == 1]) # This is probably wrong check it with sklearn or do propper mapping.
-        ab_space = m.get_abnormal_space(m_space, self.X_[self.y_ == 0]) # and this ofc too
+        m_space = m.get_normal_space(self.X_[self.y_ == 1])
+        ab_space = m.get_abnormal_space(m_space, self.X_[self.y_ == 0])
         md_n = m.get_md(m_space)
         md_ab = m.get_md(ab_space)
         m.check_validity(md_n, md_ab)
 
         oa_d = self.opt
         # Here actual MTS is going on
-        self.X_ = m.optimize_space(normal_data = self.X_[self.y_ == 1], abnormal_data = self.X_[self.y_ == 0], oa_design = oa_d) # make it to save to self instead
+        self.X_, self.selected_features_ = m.optimize_space(
+            normal_data=self.X_[self.y_ == 1],
+            abnormal_data=self.X_[self.y_ == 0],
+            oa_design=oa_d,
+            threshold=self.threshold
+        )
+
+        # Temporary classification threshold.
+        # In a valid Mahalanobis normal space mean MD should be around 1.
+        self.md_threshold_ = np.mean(m.get_md(self.X_))
         # end
 
         # Return the classifier
         return self
 
     def predict(self, X):
-        # Check if fit has been called
-        check_is_fitted(self)
+        selected_X = X[:, self.selected_features_]
 
-        # Input validation
-        X = validate_data(self, X, reset=False)
+        sample_space = m.get_abnormal_space(self.X_, selected_X)
+        md = m.get_md(sample_space)
 
-        closest = np.argmin(euclidean_distances(X, self.X_), axis=1)
-        return self.y_[closest]
-
-
-
-
-
+        return np.where(md > self.md_threshold_, 0, 1)

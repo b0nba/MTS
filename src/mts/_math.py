@@ -106,19 +106,14 @@ def get_delta(to_compare: np.ndarray):
 
     return to_compare[id_included] - to_compare[id_excluded]
 
-def optimize_space(normal_data: np.ndarray, abnormal_data: np.ndarray, oa_design: np.ndarray):
+def optimize_space(normal_data: np.ndarray, abnormal_data: np.ndarray, oa_design: np.ndarray, threshold):
     snrs = get_snrs(oa_design, normal_data, abnormal_data)
     compared = compare_snr(oa_design,snrs)
     deltas = get_delta(compared)
 
-    selected_features = deltas > 0
+    selected_features = deltas > threshold
 
-    selected_normal_data = normal_data[:, selected_features] # why only normal data?
+    selected_normal_data = normal_data[:, selected_features]
     optimized_space = get_normal_space(selected_normal_data)
 
-    # Function which returns most optimal space
-    # And setting up a threshold (probably in a different function)
-    # Make a decision based on deltas, and set threshold?
-
-    return optimized_space
-
+    return optimized_space, selected_features
