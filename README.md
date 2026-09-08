@@ -158,7 +158,7 @@ Expected output:
 
 ## Feature selection
 
-The current implementation uses a Taguchi orthogonal array.
+The current implementation uses a Taguchi orthogonal array. The user must provide an orthogonal array design explicitly. This package does not currently generate orthogonal arrays automatically; external tools such as `oapackage` may be useful for constructing an appropriate design.
 
 For each feature, the average S/N ratio is compared when the feature is included and excluded.
 
