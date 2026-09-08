@@ -5,8 +5,8 @@ import pandas as pd
 To Do: 
 
 1. Consider what else to test (edge-cases) and prototype it.
-2. Head to 'test_get_snrs.py'
 '''
+
 @pytest.fixture
 def test_data():
     return pd.DataFrame({'A': (3, 2, 6, 7),

@@ -1,9 +1,5 @@
-from dataclasses import dataclass
 import numpy as np
-from dataclasses import replace
-
-from pandas.core.dtypes import astype
-
+from dataclasses import replace, dataclass
 
 @dataclass(frozen=True, eq=False)
 class UnitSpace:
@@ -12,10 +8,6 @@ class UnitSpace:
     corr_matrix_inv: np.ndarray
     z: np.ndarray
 
-'''
-To Do: 
-
-'''
 
 def get_normal_space(normal_data: np.ndarray):
 
@@ -29,7 +21,7 @@ def get_normal_space(normal_data: np.ndarray):
 
     return UnitSpace(mean=mean, std=std, corr_matrix_inv=corr_inv, z=z_scores)
 
-def get_abnormal_space(normal_space: np.ndarray, abnormal_data: np.ndarray):
+def get_abnormal_space(normal_space: UnitSpace, abnormal_data: np.ndarray):
     z_scores = (abnormal_data - normal_space.mean) / normal_space.std
     return replace(normal_space, z=z_scores)
 
@@ -47,19 +39,7 @@ def get_snr_ntb_target(md: np.ndarray, target=1.0):
     variance = np.var(md, ddof=1)
     return 10 * np.log10(target**2 / variance)
 
-def check_validity(md_normal: np.ndarray, md_abnormal: np.ndarray):
-    md_mean_n = np.mean(md_normal)
-    snr = get_snr_ntb_target(md_normal)
-    print("\nMD mean (should be ~ 1):", md_mean_n)
-    print("SNR:", snr)
 
-    md_mean_ab = np.mean(md_abnormal)
-
-    print(f"MD mean for normal space is:   {md_mean_n} \nMD mean for abnormal space is: {md_mean_ab}")
-
-    separation = md_mean_ab/md_mean_n
-
-    print(f"Separation: {separation}")
 
 def get_snrs(oa_design: np.ndarray, normal_data: np.ndarray, ab_data: np.ndarray):
 
@@ -106,14 +86,18 @@ def get_delta(to_compare: np.ndarray):
 
     return to_compare[id_included] - to_compare[id_excluded]
 
-def optimize_space(normal_data: np.ndarray, abnormal_data: np.ndarray, oa_design: np.ndarray, threshold):
+def optimize_space(normal_data,abnormal_data,oa_design):
     snrs = get_snrs(oa_design, normal_data, abnormal_data)
-    compared = compare_snr(oa_design,snrs)
+    compared = compare_snr(oa_design, snrs)
     deltas = get_delta(compared)
 
-    selected_features = deltas > threshold
+    selected_features = deltas > 0
+
+    if not np.any(selected_features):
+        raise ValueError("MTS optimization did not select any features.")
 
     selected_normal_data = normal_data[:, selected_features]
     optimized_space = get_normal_space(selected_normal_data)
 
     return optimized_space, selected_features
+

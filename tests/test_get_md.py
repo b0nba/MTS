@@ -12,7 +12,6 @@ To Do:
 1. Consider what else to test (edge-cases) and prototype it 
 2. Resolve current comments
 3. Create test.py files for all functions inside od _math.py
-4. Head to test_get_normal_space.py
 
 '''
 @pytest.fixture
