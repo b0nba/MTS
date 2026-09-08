@@ -1,17 +1,18 @@
-MTS
+# MTS
 
-Experimental implementation of the Mahalanobis-Taguchi System (MTS) for binary classification and feature selection.
+Experimental implementation of the **Mahalanobis-Taguchi System (MTS)** for binary classification and feature selection.
 
 The project currently provides a scikit-learn-style classifier interface while the internal API and full scikit-learn integration are still under development.
 
-Status: experimental / alpha release
+> **Status:** experimental / alpha release
 
-Overview
+## Overview
 
-The Mahalanobis-Taguchi System builds a reference space from observations considered normal, evaluates the separation of abnormal observations from that space, selects useful features using a Taguchi orthogonal array, and classifies new observations using their Mahalanobis Distance.
+The Mahalanobis-Taguchi System builds a reference space from observations considered **normal**, evaluates the separation of abnormal observations from that space, selects useful features using a Taguchi orthogonal array, and classifies new observations using their Mahalanobis Distance.
 
 The current implementation follows this workflow:
 
+```text
 training data
     |
     v
@@ -37,47 +38,42 @@ chi-square classification threshold
     |
     v
 prediction
+```
 
-Current features
+## Current features
 
-Mahalanobis Unit Space construction
-
-Mahalanobis Distance calculation
-
-S/N ratio calculation
-
-MTS validation stage
-
-Taguchi orthogonal-array feature selection
-
-Feature selection using positive Delta S/N
-
-Chi-square-based classification threshold
-
-Binary fit() / predict() interface
-
-Initial scikit-learn-style estimator structure
+- Mahalanobis Unit Space construction
+- Mahalanobis Distance calculation
+- S/N ratio calculation
+- MTS validation stage
+- Taguchi orthogonal-array feature selection
+- Feature selection using positive Delta S/N
+- Chi-square-based classification threshold
+- Binary `fit()` / `predict()` interface
+- Initial scikit-learn-style estimator structure
 
 Planned future work includes additional optimization strategies such as Bee Algorithm and Ant Colony Optimization, as well as fuller scikit-learn integration.
 
-Installation
+## Installation
 
 Clone the repository and install it in editable mode:
 
+```bash
 git clone https://github.com/b0nba/MTS.git
 cd MTS
 pip install -e .
+```
 
-Basic usage
+## Basic usage
 
 In the current implementation:
 
-1 represents the normal class
-
-0 represents the abnormal class
+- `1` represents the **normal** class
+- `0` represents the **abnormal** class
 
 Example:
 
+```python
 import numpy as np
 
 from mts import MTS
@@ -152,32 +148,38 @@ X_test = np.array([
 predictions = model.predict(X_test)
 
 print(predictions)
+```
 
 Expected output:
 
+```text
 [1 1 0 0]
+```
 
-Feature selection
+## Feature selection
 
 The current implementation uses a Taguchi orthogonal array.
 
 For each feature, the average S/N ratio is compared when the feature is included and excluded.
 
+```text
 Delta S/N = mean(S/N included) - mean(S/N excluded)
+```
 
 A feature is retained when:
 
+```text
 Delta S/N > 0
+```
 
 Therefore:
 
-positive Delta S/N -> feature is retained
-
-negative or zero Delta S/N -> feature is removed
+- positive Delta S/N -> feature is retained
+- negative or zero Delta S/N -> feature is removed
 
 The optimizer API is expected to be generalized in future releases so alternative feature-selection algorithms can be used.
 
-Classification threshold
+## Classification threshold
 
 Feature selection and classification-threshold determination are separate stages.
 
@@ -187,49 +189,56 @@ The current implementation uses a chi-square-based classification threshold.
 
 The Mahalanobis Distance returned by this package is normalized by the number of selected features:
 
+```text
 MD = D^2 / p
+```
 
 where:
 
-D^2 is the squared Mahalanobis Distance
-
-p is the number of selected features
+- `D^2` is the squared Mahalanobis Distance
+- `p` is the number of selected features
 
 The decision threshold is calculated as:
 
+```text
 chi2.ppf(1 - alpha, df=p) / p
+```
 
 The default value is:
 
+```python
 alpha = 0.05
+```
 
 Prediction follows the rule:
 
+```text
 MD <= threshold  -> normal   (1)
 MD >  threshold  -> abnormal (0)
+```
 
-alpha should satisfy:
+`alpha` should satisfy:
 
+```text
 0 < alpha < 1
+```
 
-Validation stage
+## Validation stage
 
 Before optimization, the implementation evaluates the initial Mahalanobis space using the normal and abnormal observations.
 
 The current validation output includes:
 
-mean Mahalanobis Distance of the normal space
+- mean Mahalanobis Distance of the normal space
+- S/N ratio of the normal space
+- mean Mahalanobis Distance of abnormal observations
+- separation between abnormal and normal mean MD
 
-S/N ratio of the normal space
+The current alpha release prints these diagnostics during `fit()`.
 
-mean Mahalanobis Distance of abnormal observations
+## Project structure
 
-separation between abnormal and normal mean MD
-
-The current alpha release prints these diagnostics during fit().
-
-Project structure
-
+```text
 src/
 └── mts/
     ├── __init__.py
@@ -241,73 +250,54 @@ src/
     └── optimizers/
         ├── __init__.py
         └── taguchi.py
+```
 
 Responsibilities:
 
-mts.py - classifier orchestration (fit, predict)
+- `mts.py` - classifier orchestration (`fit`, `predict`)
+- `_math.py` - Mahalanobis-space and S/N calculations
+- `_validation.py` - MTS validation stage
+- `_threshold.py` - classification-threshold calculation
+- `optimizers/` - placeholder for future interchangeable optimization strategies
 
-_math.py - Mahalanobis-space and S/N calculations
+## scikit-learn integration
 
-_validation.py - MTS validation stage
-
-_threshold.py - classification-threshold calculation
-
-optimizers/ - placeholder for future interchangeable optimization strategies
-
-scikit-learn integration
-
-The current classifier inherits from scikit-learn's BaseEstimator and ClassifierMixin and follows a fit() / predict() interface.
+The current classifier inherits from scikit-learn's `BaseEstimator` and `ClassifierMixin` and follows a `fit()` / `predict()` interface.
 
 Full scikit-learn estimator compatibility, pipeline support, estimator checks, and a generalized optimizer API are planned for future releases.
 
 The current release should therefore be treated as an experimental implementation rather than a fully scikit-learn-compatible estimator.
 
-Limitations
+## Limitations
 
 The current release intentionally focuses on a minimal implementation.
 
 Important limitations include:
 
-binary classification only
+- binary classification only
+- class labels are currently fixed to `1 = normal` and `0 = abnormal`
+- Taguchi/OA is currently the only implemented feature-selection approach
+- the user must provide an appropriate orthogonal-array design
+- singular or poorly conditioned correlation matrices are not yet handled automatically
+- constant features may lead to invalid standardization
+- input validation is currently minimal
+- chi-square thresholding relies on assumptions associated with Mahalanobis-distance modelling
+- full scikit-learn compatibility is not yet guaranteed
 
-class labels are currently fixed to 1 = normal and 0 = abnormal
-
-Taguchi/OA is currently the only implemented feature-selection approach
-
-the user must provide an appropriate orthogonal-array design
-
-singular or poorly conditioned correlation matrices are not yet handled automatically
-
-constant features may lead to invalid standardization
-
-input validation is currently minimal
-
-chi-square thresholding relies on assumptions associated with Mahalanobis-distance modelling
-
-full scikit-learn compatibility is not yet guaranteed
-
-Roadmap
+## Roadmap
 
 Planned development includes:
 
-modular optimizer API
+- modular optimizer API
+- Taguchi optimizer extraction from the mathematical core
+- Bee Algorithm optimization
+- Ant Colony Optimization
+- additional threshold-selection strategies
+- improved numerical stability
+- improved input validation
+- full scikit-learn integration
+- expanded test coverage and documentation
 
-Taguchi optimizer extraction from the mathematical core
+## License
 
-Bee Algorithm optimization
-
-Ant Colony Optimization
-
-additional threshold-selection strategies
-
-improved numerical stability
-
-improved input validation
-
-full scikit-learn integration
-
-expanded test coverage and documentation
-
-License
-
-See the LICENSE file included in this repository.
+See the `LICENSE` file included in this repository.
