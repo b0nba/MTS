@@ -7,9 +7,6 @@ class ChiSquareThreshold(BaseEstimator):
         self.alpha = alpha
 
     def fit(self, md, y=None, *, feature_count=None):
-        self.threshold =  (chi2.ppf(1 - self.alpha, df=feature_count) / feature_count )
+        self.threshold_ =  (chi2.ppf(1 - self.alpha, df=feature_count) / feature_count )
 
         return self
-
-    def get_support(self):
-        return self.threshold

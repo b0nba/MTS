@@ -42,8 +42,8 @@ def check_validity(
 
 def check_space(x, y):
 
-    normal_data = x[y == 1]
-    abnormal_data = x[y == 0]
+    normal_data = x
+    abnormal_data = y
 
     m_space = m.get_normal_space(normal_data)
 

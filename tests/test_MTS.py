@@ -3,7 +3,8 @@ import mts.mts as mts
 import numpy as np
 
 from mts.mts import MTS
-
+from mts.optimizers.taguchi import TaguchiOptimizer
+from mts._threshold import ChiSquareThreshold
 
 def test_mts_machine_classification():
 
@@ -68,8 +69,8 @@ def test_mts_machine_classification():
     ])
 
     model = MTS(
-        opt=oa_design,
-        alpha=0.05
+        optimizer=TaguchiOptimizer(oa_design=oa_design),
+        threshold= ChiSquareThreshold(alpha=0.05)
     )
 
     model.fit(

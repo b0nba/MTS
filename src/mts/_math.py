@@ -29,6 +29,7 @@ def get_md(us: UnitSpace):
     col_amount = us.z.shape[1]
     return np.diag(us.z @ us.corr_matrix_inv @ us.z.T) / col_amount
 
+# Has to be here until space validation in _validation.py() is changed
 def get_snr_ltb(md):
     return -10 * np.log10(np.mean(1 / md ** 2))
 
@@ -38,31 +39,7 @@ def get_snr_stb(md):
 def get_snr_ntb_target(md: np.ndarray, target=1.0):
     variance = np.var(md, ddof=1)
     return 10 * np.log10(target**2 / variance)
-
-
-
-def get_snrs(oa_design: np.ndarray, normal_data: np.ndarray, ab_data: np.ndarray):
-
-    snrs = []
-    for row in oa_design:
-
-        mask = row.astype(bool)
-
-        sub_m_data = normal_data[:,mask]
-        sub_ab_data = ab_data[:,mask]
-
-        m_space = get_normal_space(sub_m_data) # sub-normal space
-
-        ab_space = get_abnormal_space(m_space, sub_ab_data) # sub-abnormal space
-
-        md = get_md(ab_space)
-
-        snr = get_snr_ltb(md) # Using larger the better as default SNR.
-
-        snrs.append(snr)
-
-    snrs = np.array(snrs)
-    return snrs
+########################  Remove up to this point after change  #############################################
 
 def compare_snr(oa: np.ndarray, snr: np.ndarray):
 
@@ -85,19 +62,3 @@ def get_delta(to_compare: np.ndarray):
     id_included = 1
 
     return to_compare[id_included] - to_compare[id_excluded]
-
-def optimize_space(normal_data,abnormal_data, oa_design):
-    snrs = get_snrs(oa_design, normal_data, abnormal_data)
-    compared = compare_snr(oa_design, snrs)
-    deltas = get_delta(compared)
-
-    selected_features = deltas > 0
-
-    if not np.any(selected_features):
-        raise ValueError("MTS optimization did not select any features.")
-
-    selected_normal_data = normal_data[:, selected_features]
-    optimized_space = get_normal_space(selected_normal_data)
-
-    return optimized_space, selected_features
-
