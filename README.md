@@ -284,15 +284,11 @@ Important limitations include:
 - full scikit-learn compatibility is not yet guaranteed
 
 ## Roadmap
-
 Highest priority:
-
-- make the S/N ratio criterion configurable instead of using the hardcoded Larger-The-Better formulation
-
+- more detailed testing, numerical, statistical edge-cases testing
+  
 Further planned development includes:
-
 - modular optimizer API
-- Taguchi optimizer extraction from the mathematical core
 - Bee Algorithm optimization
 - Ant Colony Optimization
 - additional threshold-selection strategies
