@@ -86,7 +86,7 @@ def get_delta(to_compare: np.ndarray):
 
     return to_compare[id_included] - to_compare[id_excluded]
 
-def optimize_space(normal_data,abnormal_data,oa_design):
+def optimize_space(normal_data,abnormal_data, oa_design):
     snrs = get_snrs(oa_design, normal_data, abnormal_data)
     compared = compare_snr(oa_design, snrs)
     deltas = get_delta(compared)

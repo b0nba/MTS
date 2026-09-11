@@ -40,7 +40,11 @@ def check_validity(
         f"Separation: {separation}"
     )
 
-def check_space(normal_data, abnormal_data):
+def check_space(x, y):
+
+    normal_data = x[y == 1]
+    abnormal_data = x[y == 0]
+
     m_space = m.get_normal_space(normal_data)
 
     ab_space = m.get_abnormal_space(
