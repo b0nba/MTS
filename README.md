@@ -285,7 +285,7 @@ Important limitations include:
 
 ## Roadmap
 Highest priority:
-- more detailed testing, numerical, statistical edge-cases testing
+- more detailed numerical, statistical edge-cases testing
   
 Further planned development includes:
 - modular optimizer API
